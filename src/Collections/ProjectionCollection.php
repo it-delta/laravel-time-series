@@ -100,8 +100,12 @@ class ProjectionCollection extends Collection
     {
         [$periodQuantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
-        $startDate->floorUnit($periodType, $periodQuantity);
-        $endDate->floorUnit($periodType, $periodQuantity);
+        // BUG в библиотеке Carbon? Неправильно округляет недели
+        $startDate->startOf($periodType, $periodQuantity);
+        $endDate->startOf($periodType, $periodQuantity);
+
+//        $startDate->floorUnit($periodType, $periodQuantity);
+//        $endDate->floorUnit($periodType, $periodQuantity);
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {
             throw new OverlappingFillBetweenDatesException();
@@ -195,10 +199,10 @@ class ProjectionCollection extends Collection
         $allProjectionsDates = collect([$startDate]);
         [$periodQuantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
-        while ($cursorDate->notEqualTo($endDate)):
+        while ($cursorDate->lessThanOrEqualTo($endDate)):
             $cursorDate->add($periodQuantity, $periodType);
 
-            if ($cursorDate->notEqualTo($endDate)) {
+            if ($cursorDate->lessThanOrEqualTo($endDate)) {
                 $allProjectionsDates->push(clone $cursorDate);
             }
         endwhile;
