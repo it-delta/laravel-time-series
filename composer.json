@@ -1,5 +1,5 @@
 {
-    "name": "timothepearce/laravel-time-series",
+    "name": "it-delta/laravel-time-series",
     "description": "Laravel Time Series provides an API to create and maintain projected data from you Eloquent models, and represent them as time-series.",
     "type": "library",
     "keywords": [
