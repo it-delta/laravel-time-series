@@ -7,7 +7,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use TimothePearce\TimeSeries\Contracts\WeekInfoContract;
 use TimothePearce\TimeSeries\Models\Projection;
-use TimothePearce\TimeSeries\Services\WeekService;
 
 class Projector
 {
@@ -195,10 +194,9 @@ class Projector
     protected function resolveStartDate(string $periodType, int $quantity): Carbon
     {
         $startDate = $this->projectedModel->created_at->floorUnit($periodType, $quantity);
-        $week = new WeekService(app(WeekInfoContract::class));
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek($week->get()); // Проблемный код
+            $startDate->startOfWeek(app(WeekInfoContract::class)->get()); // Проблемный код
         }
 
         return $startDate;

@@ -4,8 +4,6 @@ namespace TimothePearce\TimeSeries;
 
 use TimothePearce\TimeSeries\Services\DefaultWeekInfoService;
 use Illuminate\Support\ServiceProvider;
-use TimothePearce\TimeSeries\Services\RecalculationWeeksService;
-use TimothePearce\TimeSeries\Contracts\RecalculationWeeksContract;
 use TimothePearce\TimeSeries\Commands\CreateProjectionCommand;
 use TimothePearce\TimeSeries\Commands\DropProjectionsCommand;
 use TimothePearce\TimeSeries\Commands\ProjectModelsCommand;
@@ -48,11 +46,7 @@ class TimeSeriesServiceProvider extends ServiceProvider
         });
 
         if(!$this->app->bound(WeekInfoContract::class)){
-            $this->app->bind(WeekInfoContract::class, DefaultWeekInfoService::class);
-        }
-
-        if(!$this->app->bound(RecalculationWeeksContract::class)){
-            $this->app->bind(RecalculationWeeksContract::class, RecalculationWeeksService::class);
+            $this->app->singleton(WeekInfoContract::class, DefaultWeekInfoService::class);
         }
 
     }

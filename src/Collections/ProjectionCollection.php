@@ -11,7 +11,6 @@ use TimothePearce\TimeSeries\Exceptions\MultiplePeriodsException;
 use TimothePearce\TimeSeries\Exceptions\MultipleProjectionsException;
 use TimothePearce\TimeSeries\Exceptions\OverlappingFillBetweenDatesException;
 use TimothePearce\TimeSeries\Models\Projection;
-use TimothePearce\TimeSeries\Services\WeekService;
 
 class ProjectionCollection extends Collection
 {
@@ -109,11 +108,9 @@ class ProjectionCollection extends Collection
 //        $startDate->floorUnit($periodType, $periodQuantity);
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
-        $week = new WeekService(app(WeekInfoContract::class));
-
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek($week->get());
-            $endDate->startOfWeek($week->get());
+            $startDate->startOfWeek(app(WeekInfoContract::class)->get());
+            $endDate->startOfWeek(app(WeekInfoContract::class)->get());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {

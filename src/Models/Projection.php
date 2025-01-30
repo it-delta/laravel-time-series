@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Carbon;
 use TimothePearce\TimeSeries\Collections\ProjectionCollection;
-use TimothePearce\TimeSeries\Contracts\WeekInfoContract;
 use TimothePearce\TimeSeries\Exceptions\MissingProjectionNameException;
 use TimothePearce\TimeSeries\Exceptions\MissingProjectionPeriodException;
 use TimothePearce\TimeSeries\Models\Scopes\ProjectionScope;
