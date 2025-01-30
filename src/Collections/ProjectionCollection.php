@@ -108,8 +108,8 @@ class ProjectionCollection extends Collection
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(config('time-series.beginning_of_the_week'));
-            $endDate->startOfWeek(config('time-series.beginning_of_the_week'));
+            $startDate->startOfWeek(config('time-series.beginning_of_the_week')());
+            $endDate->startOfWeek(config('time-series.beginning_of_the_week')());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {
