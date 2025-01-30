@@ -8,9 +8,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use TimothePearce\TimeSeries\Models\Traits\Projectable;
+use TimothePearce\TimeSeries\Contracts\WeekInfoContract;
 
 class TimeSeries
 {
+    public function __construct(protected WeekInfoContract $weekInfoContract) {}
     /**
      * Resolves the projectable models from the app.
      */
@@ -45,7 +47,7 @@ class TimeSeries
         $startDate = $date->startOf($periodType, $quantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(config('time-series.beginning_of_the_week'));
+            $startDate->startOfWeek($this->weekInfoContract->get());
         }
 
         return $startDate;

@@ -5,11 +5,13 @@ namespace TimothePearce\TimeSeries\Collections;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use TimothePearce\TimeSeries\Contracts\WeekInfoContract;
 use TimothePearce\TimeSeries\Exceptions\EmptyProjectionCollectionException;
 use TimothePearce\TimeSeries\Exceptions\MultiplePeriodsException;
 use TimothePearce\TimeSeries\Exceptions\MultipleProjectionsException;
 use TimothePearce\TimeSeries\Exceptions\OverlappingFillBetweenDatesException;
 use TimothePearce\TimeSeries\Models\Projection;
+use TimothePearce\TimeSeries\Services\WeekService;
 
 class ProjectionCollection extends Collection
 {
@@ -107,9 +109,11 @@ class ProjectionCollection extends Collection
 //        $startDate->floorUnit($periodType, $periodQuantity);
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
+        $week = new WeekService(app(WeekInfoContract::class));
+
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(config('time-series.beginning_of_the_week'));
-            $endDate->startOfWeek(config('time-series.beginning_of_the_week'));
+            $startDate->startOfWeek($week->get());
+            $endDate->startOfWeek($week->get());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {

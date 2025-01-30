@@ -5,7 +5,9 @@ namespace TimothePearce\TimeSeries;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use TimothePearce\TimeSeries\Contracts\WeekInfoContract;
 use TimothePearce\TimeSeries\Models\Projection;
+use TimothePearce\TimeSeries\Services\WeekService;
 
 class Projector
 {
@@ -13,8 +15,7 @@ class Projector
         protected Model  $projectedModel,
         protected string $projectionName,
         protected string $eventName,
-    ) {
-    }
+    ) {}
 
     /**
      * Handles the projection.
@@ -53,7 +54,7 @@ class Projector
     /**
      * Is the given period a global one or not.
      */
-    private function isGlobalPeriod($period): bool
+    protected function isGlobalPeriod($period): bool
     {
         return $period === '*';
     }
@@ -61,7 +62,7 @@ class Projector
     /**
      * Handles the global period case.
      */
-    private function createOrUpdateGlobalPeriod(): void
+    protected function createOrUpdateGlobalPeriod(): void
     {
         $projection = $this->findGlobalProjection();
 
@@ -73,7 +74,7 @@ class Projector
     /**
      * Parses the given period.
      */
-    private function parsePeriod(string $period): void
+    protected function parsePeriod(string $period): void
     {
         $projection = $this->findProjection($period);
 
@@ -85,7 +86,7 @@ class Projector
     /**
      * Finds the global projection if it exists.
      */
-    private function findGlobalProjection(): Projection|null
+    protected function findGlobalProjection(): Projection|null
     {
         return Projection::firstWhere([
             ['projection_name', $this->projectionName],
@@ -98,7 +99,7 @@ class Projector
     /**
      * Finds the projection if it exists.
      */
-    private function findProjection(string $period): Projection|null
+    protected function findProjection(string $period): Projection|null
     {
         return Projection::firstWhere([
             ['projection_name', $this->projectionName],
@@ -111,7 +112,7 @@ class Projector
     /**
      * Creates the projection.
      */
-    private function createProjection(string $period): void
+    protected function createProjection(string $period): void
     {
         $this->projectedModel->projections()->create([
             'projection_name' => $this->projectionName,
@@ -125,7 +126,7 @@ class Projector
     /**
      * Creates the global projection.
      */
-    private function createGlobalProjection()
+    protected function createGlobalProjection()
     {
         $this->projectedModel->projections()->create([
             'projection_name' => $this->projectionName,
@@ -139,7 +140,7 @@ class Projector
     /**
      * Updates the projection.
      */
-    private function updateProjection(Projection $projection, string $period): void
+    protected function updateProjection(Projection $projection, string $period): void
     {
         $projection->content = $this->mergeProjectedContent($projection->content, $period);
 
@@ -149,7 +150,7 @@ class Projector
     /**
      * Determines whether the class has a key.
      */
-    private function hasKey(): bool
+    protected function hasKey(): bool
     {
         return method_exists($this->projectionName, 'key');
     }
@@ -157,7 +158,7 @@ class Projector
     /**
      * Merges the projected content with the given one.
      */
-    private function mergeProjectedContent(array $content, string $period): array
+    protected function mergeProjectedContent(array $content, string $period): array
     {
         return array_merge($content, $this->resolveCallableMethod($content, $period));
     }
@@ -165,7 +166,7 @@ class Projector
     /**
      * Asserts the projection has a callable method for the event name.
      */
-    private function hasCallableMethod(): bool
+    protected function hasCallableMethod(): bool
     {
         $modelName = Str::of($this->projectedModel::class)->explode('\\')->last();
         $callableMethod = lcfirst($modelName) . ucfirst($this->eventName);
@@ -177,7 +178,7 @@ class Projector
     /**
      * Resolves the callable method.
      */
-    private function resolveCallableMethod(array $content, string $period): array
+    protected function resolveCallableMethod(array $content, string $period): array
     {
         $modelName = Str::of($this->projectedModel::class)->explode('\\')->last();
         $callableMethod = lcfirst($modelName) . ucfirst($this->eventName);
@@ -191,12 +192,13 @@ class Projector
     /**
      * Resolves the projection start date.
      */
-    private function resolveStartDate(string $periodType, int $quantity): Carbon
+    protected function resolveStartDate(string $periodType, int $quantity): Carbon
     {
         $startDate = $this->projectedModel->created_at->floorUnit($periodType, $quantity);
+        $week = new WeekService(app(WeekInfoContract::class));
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(config('time-series.beginning_of_the_week'));
+            $startDate->startOfWeek($week->get()); // Проблемный код
         }
 
         return $startDate;

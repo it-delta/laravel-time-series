@@ -19,9 +19,4 @@ return [
      * Leave empty to use the default queue.
      */
     'queue_name' => '',
-
-    /*
-     * The first day of the week.
-     */
-    'beginning_of_the_week' => CarbonInterface::MONDAY,
 ];
