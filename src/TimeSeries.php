@@ -5,6 +5,7 @@ namespace TimothePearce\TimeSeries;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use ReflectionClass;
 use TimothePearce\TimeSeries\Models\Traits\Projectable;
@@ -45,7 +46,7 @@ class TimeSeries
         $startDate = $date->startOf($periodType, $quantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(TSService::getFirstWorkingDayOfWeek());
+            $startDate->startOfWeek($this->getFirstWorkingDayOfWeek());
         }
 
         return $startDate;
@@ -88,4 +89,9 @@ class TimeSeries
             ->map(fn ($pathSegment) => Str::ucfirst($pathSegment))
             ->join('\\');
     }
+
+    public static function getFirstWorkingDayOfWeek(): int {
+        return App::get('getFirstWorkingDayOfWeek') ?? config('time-series.beginning_of_the_week');
+    }
+
 }
