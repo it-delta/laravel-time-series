@@ -73,7 +73,7 @@ class Projector
     /**
      * Parses the given period.
      */
-    protected function parsePeriod(string $period): void
+    public function parsePeriod(string $period): void
     {
         $projection = $this->findProjection($period);
 
