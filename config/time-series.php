@@ -23,5 +23,5 @@ return [
     /*
      * The first day of the week.
      */
-    'beginning_of_the_week' => fn() => CarbonInterface::MONDAY,
+    'beginning_of_the_week' => CarbonInterface::MONDAY
 ];

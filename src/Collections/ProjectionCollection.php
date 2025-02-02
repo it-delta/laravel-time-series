@@ -10,6 +10,7 @@ use TimothePearce\TimeSeries\Exceptions\MultiplePeriodsException;
 use TimothePearce\TimeSeries\Exceptions\MultipleProjectionsException;
 use TimothePearce\TimeSeries\Exceptions\OverlappingFillBetweenDatesException;
 use TimothePearce\TimeSeries\Models\Projection;
+use TimothePearce\TimeSeries\TSService;
 
 class ProjectionCollection extends Collection
 {
@@ -108,8 +109,8 @@ class ProjectionCollection extends Collection
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(config('time-series.beginning_of_the_week')());
-            $endDate->startOfWeek(config('time-series.beginning_of_the_week')());
+            $startDate->startOfWeek(TSService::getFirstWorkingDayOfWeek());
+            $endDate->startOfWeek(TSService::getFirstWorkingDayOfWeek());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {
