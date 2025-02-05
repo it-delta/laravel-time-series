@@ -42,10 +42,11 @@ class TimeSeries
     {
         [$quantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
-//        $startDate = $date->floorUnit($periodType, $quantity);
-        $startDate = $date->startOf($periodType, $quantity);
+    //    $startDate = $date->floorUnit($periodType, $quantity);
+        $startDate = $date->copy()->startOf($periodType, $quantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
+            $startDate = $date->copy();
             $startDate->startOfWeek($this->getFirstWorkingDayOfWeek());
         }
 

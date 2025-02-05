@@ -113,12 +113,21 @@ class Projector
      */
     protected function createProjection(string $period): void
     {
+        $content =  $this->mergeProjectedContent((new $this->projectionName())->defaultContent(), $period);
+        $projection = Projection::firstWhere([
+           'projection_name' => $this->projectionName,
+            'key' => $this->hasKey() ? $this->key() : null,
+            'period' => $period,
+            'start_date' => app(TimeSeries::class)->resolveFloorDate($this->projectedModel->created_at, $period),
+        ]);
+
+        if(is_null($projection))
         $this->projectedModel->projections()->create([
             'projection_name' => $this->projectionName,
             'key' => $this->hasKey() ? $this->key() : null,
             'period' => $period,
             'start_date' => app(TimeSeries::class)->resolveFloorDate($this->projectedModel->created_at, $period),
-            'content' => $this->mergeProjectedContent((new $this->projectionName())->defaultContent(), $period),
+            'content' => $content,
         ]);
     }
 
