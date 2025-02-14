@@ -97,20 +97,20 @@ class ProjectionCollection extends Collection
      *
      * @throws OverlappingFillBetweenDatesException
      */
-    private function resolveDatesParameters(string $period, Carbon $startDate, Carbon $endDate): array
+    private function resolveDatesParameters(string $period, Carbon $startDateInitial, Carbon $endDateInitial): array
     {
         [$periodQuantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
         // BUG в библиотеке Carbon? Неправильно округляет недели
-        $startDate->startOf($periodType, $periodQuantity);
-        $endDate->startOf($periodType, $periodQuantity);
+        $startDate = $startDateInitial->copy()->startOf($periodType, $periodQuantity);
+        $endDate = $endDateInitial->copy()->startOf($periodType, $periodQuantity);
 
 //        $startDate->floorUnit($periodType, $periodQuantity);
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
-            $endDate->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
+            $startDate = $startDateInitial->copy()->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
+            $endDate = $endDateInitial->copy()->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {
