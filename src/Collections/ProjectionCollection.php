@@ -102,15 +102,15 @@ class ProjectionCollection extends Collection
         [$periodQuantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
         // BUG в библиотеке Carbon? Неправильно округляет недели
-        $startDate = $startDateInitial->copy()->startOf($periodType, $periodQuantity);
-        $endDate = $endDateInitial->copy()->startOf($periodType, $periodQuantity);
+        $startDate = $startDateInitial->copy()->startOf($periodType, (int)$periodQuantity);
+        $endDate = $endDateInitial->copy()->startOf($periodType, (int)$periodQuantity);
 
 //        $startDate->floorUnit($periodType, $periodQuantity);
 //        $endDate->floorUnit($periodType, $periodQuantity);
 
         if (in_array($periodType, ['week', 'weeks'])) {
-            $startDate = $startDateInitial->copy()->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
-            $endDate = $endDateInitial->copy()->startOfWeek(app(TimeSeries::class)->getFirstWorkingDayOfWeek());
+            $startDate = $startDateInitial->copy()->startOfWeek((int)app(TimeSeries::class)->getFirstWorkingDayOfWeek());
+            $endDate = $endDateInitial->copy()->startOfWeek((int)app(TimeSeries::class)->getFirstWorkingDayOfWeek());
         }
 
         if ($startDate->greaterThanOrEqualTo($endDate)) {
@@ -206,7 +206,7 @@ class ProjectionCollection extends Collection
         [$periodQuantity, $periodType] = Str::of($period)->split('/[\s]+/');
 
         while ($cursorDate->lessThanOrEqualTo($endDate)):
-            $cursorDate->add($periodQuantity, $periodType);
+            $cursorDate->add((int)$periodQuantity, $periodType);
 
             if ($cursorDate->lessThanOrEqualTo($endDate)) {
                 $allProjectionsDates->push(clone $cursorDate);
